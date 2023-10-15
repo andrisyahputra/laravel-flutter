@@ -14,5 +14,26 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('blank-page', ['type_menu' => '']);
+    return view('auth.login');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('home', function () {
+        return View('pages.blank-page', ['type_menu' => '']);
+    })->name('home');
+});
+// Route::get('/login', function () {
+//     return view('auth.login');
+// });
+// Route::get('/register', function () {
+//     return view('auth.register');
+// });
+// Route::get('/forgot', function () {
+//     return view('auth.forgot');
+// });
+// Route::get('/reset', function () {
+//     return view('auth.reset');
+// });
+// Route::get('/verify', function () {
+//     return view('auth.verify');
+// });
