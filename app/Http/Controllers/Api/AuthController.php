@@ -36,7 +36,44 @@ class AuthController extends Controller
             'user' => new UserResource($user),
         ]);
     }
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required',
+            'name' => 'required',
+            // 'phone' => 'required',
+            // 'bio' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            throw ValidationException::withMessages([
+                'email' => [$request->email . ' sudah terdaftar']
+            ]);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            // 'phone' => $request->phone,
+            // 'bio' => $request->bio,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+        ]);
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'jwt-token' => $token,
+            'user' => new UserResource($user),
+        ]);
+    }
     public function logout(Request $request)
     {
+        $request->user()->tokens()->delete();
+        return response()->json([
+            'message' => "logout berhasil",
+        ]);
     }
 }
