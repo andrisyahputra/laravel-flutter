@@ -13,13 +13,26 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        //
-        // $users = User::paginate(5);
+        $perPage = 5; // Jumlah data per halaman
+        $page = $request->input('page', 1); // Halaman saat ini
+
         $users = DB::table('users')->when($request->input('search'), function ($query, $search) {
             $query->where('name', 'like', '%' . $search . '%');
-        })->paginate(5);
+        })->skip(($page - 1) * $perPage)->take($perPage)->get();
+
+        // Menghitung total pengguna untuk pagination
+        $totalUsers = DB::table('users')->when($request->input('search'), function ($query, $search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->count();
+
+        // Membuat instance Paginator manual
+        $users = new \Illuminate\Pagination\LengthAwarePaginator($users, $totalUsers, $perPage, $page, [
+            'path' => url('user'), // Sesuaikan dengan URL yang Anda inginkan
+        ]);
+
         return view('pages.user.index', compact('users'));
     }
+
 
     /**
      * Show the form for creating a new resource.

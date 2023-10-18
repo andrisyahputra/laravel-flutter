@@ -65,7 +65,7 @@
                                             <th>No HP</th>
                                             <th>Status</th>
                                         </tr>
-                                        @foreach ($users as $user)
+                                        @foreach ($users as $key => $user)
                                             <tr>
                                                 {{-- <td>Laravel 5 Tutorial: Introduction
                                                 <div class="table-links">
@@ -77,7 +77,7 @@
                                                 </div>
                                             </td> --}}
                                                 <td>
-                                                    {{ $loop->iteration }}
+                                                    {{ $loop->iteration + $users->perPage() * ($users->currentPage() - 1) }}
                                                 </td>
                                                 <td>
                                                     {{ $user->name }}
